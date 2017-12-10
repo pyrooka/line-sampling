@@ -1,0 +1,8 @@
+# Visual Studio Code config.
+.vscode/
+
+# Virtualenv.
+venv/
+
+# Auto generated files.
+*.pyc
