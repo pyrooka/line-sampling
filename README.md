@@ -1,4 +1,5 @@
 # Line sampling.
+This is a simple script for a university project. Nothing else.
 ## Usage
 ```
 sampling.py [-h] [--thickness THICKNESS] image linelength dimension
