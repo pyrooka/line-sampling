@@ -1,4 +1,4 @@
-# Line sampling.
+# Line sampling
 This is a simple script for a university project. Nothing else.
 ## Usage
 ```
