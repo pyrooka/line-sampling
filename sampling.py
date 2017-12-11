@@ -100,13 +100,13 @@ def create_grid(img, ppm, dimension):
 
     # Where the grid lines are fill with 1s.
     # Rows.
-    for i in range(0, grid.shape[0]):
+    for i, __ in enumerate(grid):
         if i % resolution_pixel == 0:
             grid[i] = 1
 
     # Columns.
     grid = grid.T
-    for i in range(0, grid.shape[0]):
+    for i, __ in enumerate(grid):
         if i % resolution_pixel == 0:
             grid[i] = 1
 
@@ -118,12 +118,12 @@ def create_grid(img, ppm, dimension):
     y_points_count = grid.shape[0] // resolution_pixel
 
     # Calculate the coordinates.
-    for i in range(0, x_points_count + 1):
-        for j in range(0, y_points_count + 1):
+    for i in range(0, x_points_count):
+        for j in range(0, y_points_count):
             grid_points.append((j * resolution_pixel, i * resolution_pixel))
 
     # Add the coordinates of the last columns too.
-    for i in range(0, y_points_count + 1):
+    for i in range(0, y_points_count):
         grid_points.append((i * resolution_pixel, grid.shape[1] - 1))
 
     return (grid, grid_points)
@@ -155,7 +155,7 @@ def get_section_points(img, grid):
     last_column = img[:, -1:]
     end = np.where(last_column == 1)
 
-    if len(end[0]) and len(end[1]):
+    if end[0] and end[1]:
         section_points.append((end[0][0], img.shape[1] - 1))
 
     return section_points
@@ -210,8 +210,11 @@ def calculate_linear_length(nodes, dimension, ppm):
     nodes = np.array(nodes)
 
     # Calculate the diffs between points.
-    for i in range(0, len(nodes) - 1):
-        diff = np.absolute(nodes[i+1] - nodes[i])
+    for i, node in enumerate(nodes):
+        if i == len(nodes) - 1:
+            break
+
+        diff = np.absolute(nodes[i+1] - node)
 
         # Y diff.
         lines_count += round(diff[0] / resolution_pixel)
@@ -237,8 +240,11 @@ def create_linear_line(grid, nodes):
     line = np.full(grid.shape, 255, dtype=np.uint8)
     nodes = np.array(nodes)
 
-    for i in range(0, len(nodes) - 1):
-        diff = nodes[i+1] - nodes[i]
+    for i, node in enumerate(nodes):
+        if i == len(nodes) - 1:
+            break
+
+        diff = nodes[i+1] - node
 
         # X.
         for j in range(0, abs(diff[1]) + 1):
@@ -312,15 +318,15 @@ def main():
 
     # Create the grid.
     grid, grid_points = create_grid(matrix, ppm, dimension)
-    if not len(grid_points):
+    if not grid_points:
         sys.exit('Not enough grid points.')
 
     section_points = get_section_points(matrix, grid)
-    if not len(section_points):
+    if not section_points:
         sys.exit('Not enough section points.')
 
     nodes = find_nodes(grid_points, section_points)
-    if not len(nodes):
+    if not nodes:
         sys.exit('Not enough nodes.')
 
     linear_length = calculate_linear_length(nodes, dimension, ppm)
